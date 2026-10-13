@@ -1,0 +1,76 @@
+{
+  "name": "@agent-device/screen-recording-ai",
+  "version": "0.1.0",
+  "description": "AI-enhanced screen recording for mobile app automation. Automatic highlight detection, evidence extraction, and replay script generation from recordings.",
+  "license": "MIT",
+  "author": "George Nakisisa <nakisisageorge@gmail.com>",
+  "homepage": "https://github.com/nakisisageorge/agent-device-enhanced",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nakisisageorge/agent-device-enhanced.git"
+  },
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    },
+    "./highlights": {
+      "types": "./dist/src/highlights.d.ts",
+      "import": "./dist/src/highlights.js"
+    },
+    "./evidence": {
+      "types": "./dist/src/evidence.d.ts",
+      "import": "./dist/src/evidence.js"
+    },
+    "./replay": {
+      "types": "./dist/src/replay.d.ts",
+      "import": "./dist/src/replay.js"
+    }
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "oxlint . --deny-warnings"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "agent-device",
+    "screen-recording",
+    "ai",
+    "highlights",
+    "evidence",
+    "replay",
+    "mobile",
+    "automation"
+  ],
+  "peerDependencies": {
+    "ai": "^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ai": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@agent-device/contracts": "workspace:*",
+    "@agent-device/ad-replay": "workspace:*",
+    "@types/node": "^22.20.1",
+    "ai": "^7.0.68",
+    "fast-check": "^4.9.0",
+    "oxlint": "^1.79.0",
+    "tsdown": "^0.22.14",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11",
+    "@vitest/coverage-v8": "4.1.11"
+  }
+}

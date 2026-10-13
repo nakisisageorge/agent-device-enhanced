@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>agent-device-enhanced — Architecture Visualization</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/reactflow@11/dist/umd/reactflow.production.min.js" crossorigin></script>
+  <link rel="stylesheet" href="https://unpkg.com/reactflow@11/dist/style.css" />
+  <style>
+    .react-flow__node-custom {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      min-width: 180px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border: 2px solid;
+      transition: all 0.2s ease;
+    }
+    .react-flow__node-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .react-flow__node-custom.selected {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+    }
+    .react-flow__handle {
+      width: 10px;
+      height: 10px;
+      background: #3b82f6;
+      border: 2px solid white;
+    }
+    .react-flow__edge-path {
+      stroke-width: 2;
+    }
+    .panel-content {
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    .node-category-cli { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+    .node-category-daemon { background: #dbeafe; border-color: #3b82f6; color: #1e3a8a; }
+    .node-category-platform { background: #dcfce7; border-color: #22c55e; color: #14532d; }
+    .node-category-provider { background: #fce7f3; border-color: #ec4899; color: #831843; }
+    .node-category-new { background: #e0e7ff; border-color: #6366f1; color: #312e81; }
+    .node-category-core { background: #f3f4f6; border-color: #6b7280; color: #1f2937; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useCallback, useEffect, useRef } = React;
+    const { 
+      ReactFlow, 
+      Background, 
+      Controls, 
+      MiniMap,
+      Node,
+      Edge,
+      Handle,
+      Position,
+      useNodesState,
+      useEdgesState,
+      addEdge,
+      Connection,
+      MarkerType,
+      Panel
+    } = ReactFlow;
+
+    // Node data structure
+    const initialNodes = [
+      // CLI Layer
+      { id: 'cli', type: 'custom', position: { x: 400, y: 50 }, data: { label: 'CLI Entry Point', category: 'cli', description: 'agent-device binary\nCommands: open, snapshot, press, fill, wait, screenshot, close, test, mcp, doctor, help', files: ['src/bin.ts', 'src/cli.ts', 'src/commands/'] }},
+      { id: 'mcp-server', type: 'custom', position: { x: 150, y: 180 }, data: { label: 'MCP Server', category: 'cli', description: 'stdio MCP server\nExposes all commands as tools\nAI agent integration', files: ['src/mcp/', 'src/mcp/enhanced-server.ts (NEW)'] }},
+      { id: 'node-api', type: 'custom', position: { x: 650, y: 180 }, data: { label: 'Node.js API', category: 'cli', description: 'createAgentDeviceClient()\nTyped programmatic access\nCustom agent orchestration', files: ['src/agent-device-client.ts', 'src/ai-sdk/'] }},
+      { id: 'repl', type: 'custom', position: { x: 400, y: 180 }, data: { label: 'Interactive REPL (NEW)', category: 'new', description: 'agent-device repl\nLive session exploration\nTime-travel debugging', files: ['src/cli/repl.ts (NEW)'] }},
+
+      // Daemon Layer
+      { id: 'daemon', type: 'custom', position: { x: 400, y: 330 }, data: { label: 'Daemon Core', category: 'daemon', description: 'Session management\nDevice ownership/claims\nCommand routing\nRequest lifecycle', files: ['src/daemon/', 'src/daemon/daemon-command-registry.ts'] }},
+      { id: 'session-mgr', type: 'custom', position: { x: 200, y: 460 }, data: { label: 'Session Manager', category: 'daemon', description: 'Session state\nArtifact paths\nWorktree scoping', files: ['src/daemon/session-*.ts'] }},
+      { id: 'device-claims', type: 'custom', position: { x: 400, y: 460 }, data: { label: 'Device Claims', category: 'daemon', description: 'Exclusive ownership\nStale claim release\nParallel worktree isolation', files: ['src/daemon/device-claims.ts'] }},
+      { id: 'cmd-registry', type: 'custom', position: { x: 600, y: 460 }, data: { label: 'Command Registry', category: 'daemon', description: 'Route ownership\nRuntime-use declarations\nRequest-policy traits', files: ['packages/command-registry/'] }},
+
+      // Platform Runtimes
+      { id: 'platform-gateway', type: 'custom', position: { x: 400, y: 610 }, data: { label: 'Platform Runtime Gateway', category: 'core', description: 'Device inventory composition\nRuntime fact admission\nBound device runtime projection', files: ['src/platform-runtime-gateway.ts'] }},
+
+      { id: 'platform-apple', type: 'custom', position: { x: 50, y: 740 }, data: { label: 'Apple Platform', category: 'platform', description: 'iOS Simulator, Physical iOS, tvOS, macOS\nXCTest runner\nAccessibility bridge\nSnapshot presentation', files: ['packages/platform-apple/', 'apple/'] }},
+      { id: 'platform-android', type: 'custom', position: { x: 250, y: 740 }, data: { label: 'Android Platform', category: 'platform', description: 'ADB + Snapshot Helper\nUIAutomator\nReact Native support\nPerformance optimization (NEW)', files: ['packages/platform-android/', 'android/'] }},
+      { id: 'platform-web', type: 'custom', position: { x: 450, y: 740 }, data: { label: 'Web Platform', category: 'platform', description: 'agent-browser integration\nPlaywright/CDP\nAccessibility tree', files: ['packages/platform-web/'] }},
+      { id: 'platform-linux', type: 'custom', position: { x: 650, y: 740 }, data: { label: 'Linux Platform', category: 'platform', description: 'AT-SPI accessibility\nGNOME/KDE support\nHeadless CI friendly', files: ['packages/platform-linux/', 'linux/'] }},
+      { id: 'platform-harmonyos', type: 'custom', position: { x: 850, y: 740 }, data: { label: 'HarmonyOS Platform', category: 'platform', description: 'HDC + ArkUI uitest\nVega OS TV support', files: ['packages/platform-harmonyos/', 'packages/platform-vega/'] }},
+
+      // New Enhancement Packages
+      { id: 'ai-selector', type: 'custom', position: { x: 800, y: 330 }, data: { label: 'AI Selector (NEW)', category: 'new', description: 'LLM-powered selector generation\nTest-id, label, role-index, XPath\nConfidence scoring & fallbacks', files: ['packages/ai-selector/'] }},
+      { id: 'screen-recording-ai', type: 'custom', position: { x: 800, y: 460 }, data: { label: 'Screen Recording AI (NEW)', category: 'new', description: 'Auto highlight detection\nEvidence extraction\n.ad replay generation', files: ['packages/screen-recording-ai/'] }},
+      { id: 'security-patterns', type: 'custom', position: { x: 800, y: 590 }, data: { label: 'Security Patterns (NEW)', category: 'new', description: 'Credential/PII detection\nInsecure storage scan\nCert pinning verification', files: ['packages/security-patterns/'] }},
+
+      // Providers
+      { id: 'provider-gateway', type: 'custom', position: { x: 400, y: 880 }, data: { label: 'Provider Gateway', category: 'core', description: 'Remote device clouds\nWebDriver/Appium mapping\nLease management', files: ['src/provider-*.ts', 'packages/provider-*/'] }},
+      { id: 'provider-browserstack', type: 'custom', position: { x: 150, y: 1010 }, data: { label: 'BrowserStack', category: 'provider', description: 'Real device cloud\nAppium sessions\nVideo + logs', files: ['packages/provider-webdriver/'] }},
+      { id: 'provider-aws', type: 'custom', position: { x: 350, y: 1010 }, data: { label: 'AWS Device Farm', category: 'provider', description: 'Real device cloud\nParallel testing\nArtifact collection', files: ['packages/provider-webdriver/'] }},
+      { id: 'provider-limrun', type: 'custom', position: { x: 550, y: 1010 }, data: { label: 'Limrun', category: 'provider', description: 'Linux container devices\nFast startup\nCost effective', files: ['packages/provider-limrun/'] }},
+      { id: 'provider-testmu', type: 'custom', position: { x: 750, y: 1010 }, data: { label: 'TestMu AI', category: 'provider', description: 'AI-powered testing\nSelf-healing selectors\nSmart analytics', files: ['packages/provider-testmu/'] }},
+
+      // Core Contracts
+      { id: 'contracts', type: 'custom', position: { x: 1050, y: 330 }, data: { label: 'Contracts', category: 'core', description: 'Cross-language schemas\nInteraction guarantees\nSelector definitions\nWire protocols', files: ['packages/contracts/', 'packages/daemon-contracts/'] }},
+      { id: 'selectors', type: 'custom', position: { x: 1050, y: 460 }, data: { label: 'Selectors', category: 'core', description: 'Selector parsing/matching\nPredicate evaluation\nResolution disclosure', files: ['packages/selectors/'] }},
+    ];
+
+    const initialEdges = [
+      // CLI to Daemon
+      { id: 'e1', source: 'cli', target: 'daemon', animated: true },
+      { id: 'e2', source: 'mcp-server', target: 'daemon', animated: true },
+      { id: 'e3', source: 'node-api', target: 'daemon', animated: true },
+      { id: 'e4', source: 'repl', target: 'daemon', animated: true },
+
+      // Daemon internals
+      { id: 'e5', source: 'daemon', target: 'session-mgr' },
+      { id: 'e6', source: 'daemon', target: 'device-claims' },
+      { id: 'e7', source: 'daemon', target: 'cmd-registry' },
+
+      // Daemon to Platform Gateway
+      { id: 'e8', source: 'daemon', target: 'platform-gateway', animated: true },
+
+      // Platform Gateway to Platforms
+      { id: 'e9', source: 'platform-gateway', target: 'platform-apple' },
+      { id: 'e10', source: 'platform-gateway', target: 'platform-android' },
+      { id: 'e11', source: 'platform-gateway', target: 'platform-web' },
+      { id: 'e12', source: 'platform-gateway', target: 'platform-linux' },
+      { id: 'e13', source: 'platform-gateway', target: 'platform-harmonyos' },
+
+      // New packages integrate with CLI and Daemon
+      { id: 'e14', source: 'cli', target: 'ai-selector', style: { strokeDasharray: '5,5' } },
+      { id: 'e15', source: 'daemon', target: 'ai-selector', style: { strokeDasharray: '5,5' } },
+      { id: 'e16', source: 'cli', target: 'screen-recording-ai', style: { strokeDasharray: '5,5' } },
+      { id: 'e17', source: 'daemon', target: 'screen-recording-ai', style: { strokeDasharray: '5,5' } },
+      { id: 'e18', source: 'cli', target: 'security-patterns', style: { strokeDasharray: '5,5' } },
+      { id: 'e19', source: 'daemon', target: 'security-patterns', style: { strokeDasharray: '5,5' } },
+
+      // Platform Gateway to Provider Gateway
+      { id: 'e20', source: 'platform-gateway', target: 'provider-gateway', animated: true },
+
+      // Provider Gateway to Providers
+      { id: 'e21', source: 'provider-gateway', target: 'provider-browserstack' },
+      { id: 'e22', source: 'provider-gateway', target: 'provider-aws' },
+      { id: 'e23', source: 'provider-gateway', target: 'provider-limrun' },
+      { id: 'e24', source: 'provider-gateway', target: 'provider-testmu' },
+
+      // Contracts used by all
+      { id: 'e25', source: 'contracts', target: 'daemon', style: { strokeDasharray: '5,5' } },
+      { id: 'e26', source: 'contracts', target: 'platform-gateway', style: { strokeDasharray: '5,5' } },
+      { id: 'e27', source: 'selectors', target: 'platform-apple', style: { strokeDasharray: '5,5' } },
+      { id: 'e28', source: 'selectors', target: 'platform-android', style: { strokeDasharray: '5,5' } },
+      { id: 'e29', source: 'ai-selector', target: 'selectors', style: { strokeDasharray: '5,5' } },
+    ];
+
+    // Custom Node Component
+    function CustomNode({ data, selected, id }) {
+      const categoryClass = `node-category-${data.category}`;
+      return (
+        <div className={`react-flow__node-custom ${categoryClass} ${selected ? 'selected' : ''}`} 
+             onClick={() => window.dispatchEvent(new CustomEvent('node-select', { detail: { nodeId: id, data } }))}
+             style={{ cursor: 'pointer' }}>
+          <div className="font-mono text-xs opacity-60 mb-1">{data.category.toUpperCase()}</div>
+          <div>{data.label}</div>
+          <Handle type="target" position={Position.Top} />
+          <Handle type="source" position={Position.Bottom} />
+        </div>
+      );
+    }
+
+    // Side Panel Component
+    function SidePanel({ nodeData, onClose }) {
+      if (!nodeData) return null;
+      
+      return (
+        <Panel position="right" className="w-96">
+          <div className="flex items-center justify-between p-4 border-b">
+            <h3 className="font-semibold text-lg">{nodeData.label}</h3>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
+          </div>
+          <div className="p-4 panel-content">
+            <div className="mb-4">
+              <span className={`inline-block px-2 py-1 rounded text-xs font-medium bg-${getCategoryColor(nodeData.category)}-100 text-${getCategoryColor(nodeData.category)}-800`}>
+                {nodeData.category.toUpperCase()}
+              </span>
+            </div>
+            <p className="text-sm text-gray-600 whitespace-pre-line mb-4">{nodeData.description}</p>
+            <div>
+              <h4 className="font-medium text-sm mb-2">Key Files:</h4>
+              <ul className="text-xs text-gray-500 space-y-1">
+                {nodeData.files.map((f, i) => <li key={i} className="font-mono">{f}</li>)}
+              </ul>
+            </div>
+          </div>
+        </Panel>
+      );
+    }
+
+    function getCategoryColor(category) {
+      const colors = {
+        cli: 'amber',
+        daemon: 'blue',
+        platform: 'green',
+        provider: 'pink',
+        new: 'indigo',
+        core: 'gray'
+      };
+      return colors[category] || 'gray';
+    }
+
+    function App() {
+      const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+      const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+      const [selectedNode, setSelectedNode] = useState(null);
+      const [viewport, setViewport] = useState({ x: 0, y: 0, zoom: 0.7 });
+
+      const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
+
+      useEffect(() => {
+        const handler = (e) => setSelectedNode(e.detail?.data || null);
+        window.addEventListener('node-select', handler);
+        return () => window.removeEventListener('node-select', handler);
+      }, []);
+
+      return (
+        <div className="h-screen flex flex-col">
+          {/* Header */}
+          <header className="bg-white border-b shadow-sm sticky top-0 z-10">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h1 className="text-xl font-bold text-gray-900">agent-device-enhanced Architecture</h1>
+                <span className="px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-800 rounded">Mode B Enhancement Fork</span>
+              </div>
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <span>Original: callstack/agent-device</span>
+                <span>Enhanced by: George Nakisisa / GICT Africa</span>
+                <a href="https://github.com/nakisisageorge/agent-device-enhanced" target="_blank" className="text-indigo-600 hover:underline">GitHub Repo</a>
+              </div>
+            </div>
+            <div className="px-4 pb-3 flex flex-wrap gap-2">
+              <span className="px-3 py-1 text-xs rounded-full bg-amber-100 text-amber-800">CLI Layer</span>
+              <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Daemon Core</span>
+              <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800">Platform Runtimes</span>
+              <span className="px-3 py-1 text-xs rounded-full bg-pink-100 text-pink-800">Cloud Providers</span>
+              <span className="px-3 py-1 text-xs rounded-full bg-indigo-100 text-indigo-800">NEW Enhancements</span>
+              <span className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-800">Core Contracts</span>
+            </div>
+          </header>
+
+          {/* Main Flow */}
+          <div className="flex-1 relative">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onViewportChange={setViewport}
+              viewport={viewport}
+              fitView={{ padding: 0.1 }}
+              nodeTypes={{ custom: CustomNode }}
+              edgeTypes={{ default: 'default' }}
+            >
+              <Background color="#e5e7eb" gap={16} />
+              <Controls />
+              <MiniMap 
+                nodeColor={(node) => {
+                  const colors = {
+                    cli: '#f59e0b',
+                    daemon: '#3b82f6',
+                    platform: '#22c55e',
+                    provider: '#ec4899',
+                    new: '#6366f1',
+                    core: '#6b7280'
+                  };
+                  return colors[node.data?.category] || '#6b7280';
+                }}
+              />
+            </ReactFlow>
+
+            {/* Legend */}
+            <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-4 border z-10">
+              <div className="font-medium mb-2">Legend</div>
+              <div className="flex flex-col gap-1 text-xs">
+                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-amber-300"></div>CLI Entry Points</div>
+                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-blue-300"></div>Daemon Core</div>
+                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-green-300"></div>Platform Runtimes</div>
+                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-pink-300"></div>Cloud Providers</div>
+                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-indigo-300"></div>NEW Enhancements</div>
+                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-gray-300"></div>Core Contracts</div>
+                <div className="flex items-center gap-2 mt-2"><div className="w-6 h-1 border-t-2 border-dashed border-gray-400"></div>Integration / Dependency</div>
+                <div className="flex items-center gap-2"><div className="w-6 h-1 border-t-2 border-blue-500"></div>Primary Data Flow</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Side Panel */}
+          <SidePanel nodeData={selectedNode} onClose={() => setSelectedNode(null)} />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

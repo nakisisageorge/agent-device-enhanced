@@ -1,0 +1,174 @@
+{
+  "name": "@statelyai/graph",
+  "type": "module",
+  "sideEffects": false,
+  "version": "2.4.0",
+  "description": "A TypeScript-first graph library with plain JSON-serializable objects",
+  "author": "David Khourshid <david@stately.ai>",
+  "license": "MIT",
+  "homepage": "https://github.com/statelyai/graph#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/statelyai/graph.git"
+  },
+  "bugs": {
+    "url": "https://github.com/statelyai/graph/issues"
+  },
+  "keywords": [
+    "graph",
+    "directed",
+    "undirected",
+    "dag",
+    "algorithms",
+    "typescript"
+  ],
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./algorithms": "./dist/algorithms.mjs",
+    "./format-support": "./dist/format-support.mjs",
+    "./adjacency-list": "./dist/formats/adjacency-list/index.mjs",
+    "./converter": "./dist/formats/converter/index.mjs",
+    "./cytoscape": "./dist/formats/cytoscape/index.mjs",
+    "./d2": "./dist/formats/d2/index.mjs",
+    "./d3": "./dist/formats/d3/index.mjs",
+    "./dot": "./dist/formats/dot/index.mjs",
+    "./edge-list": "./dist/formats/edge-list/index.mjs",
+    "./elk": "./dist/formats/elk/index.mjs",
+    "./gexf": "./dist/formats/gexf/index.mjs",
+    "./gml": "./dist/formats/gml/index.mjs",
+    "./graphml": "./dist/formats/graphml/index.mjs",
+    "./jgf": "./dist/formats/jgf/index.mjs",
+    "./mermaid": "./dist/formats/mermaid/index.mjs",
+    "./tgf": "./dist/formats/tgf/index.mjs",
+    "./xyflow": "./dist/formats/xyflow/index.mjs",
+    "./kernel": "./dist/kernel.mjs",
+    "./layout": "./dist/layout/index.mjs",
+    "./layout/cytoscape": "./dist/layout/cytoscape.mjs",
+    "./layout/d3-force": "./dist/layout/d3-force.mjs",
+    "./layout/d3-hierarchy": "./dist/layout/d3-hierarchy.mjs",
+    "./layout/dagre": "./dist/layout/dagre.mjs",
+    "./layout/elk": "./dist/layout/elk.mjs",
+    "./layout/forceatlas2": "./dist/layout/forceatlas2.mjs",
+    "./layout/graphviz": "./dist/layout/graphviz.mjs",
+    "./layout/webcola": "./dist/layout/webcola.mjs",
+    "./queries": "./dist/queries.mjs",
+    "./schemas": "./dist/schemas.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist",
+    "schemas"
+  ],
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.5.2",
+    "@changesets/cli": "^2.31.0",
+    "@dagrejs/dagre": "^3.0.0",
+    "@dagrejs/graphlib": "^4.0.1",
+    "@hpcc-js/wasm-graphviz": "^1.22.0",
+    "@types/d3-array": "^3.2.2",
+    "@types/d3-force": "^3.0.10",
+    "@types/d3-hierarchy": "^3.1.7",
+    "@types/node": "^25.0.3",
+    "@vitest/coverage-v8": "^4.0.18",
+    "@xyflow/system": "^0.0.75",
+    "bumpp": "^10.3.2",
+    "cytoscape": "^3.34.0",
+    "d3-array": "^3.2.4",
+    "d3-force": "^3.0.0",
+    "d3-hierarchy": "^3.1.2",
+    "dotparser": "^1.1.1",
+    "elkjs": "^0.11.1",
+    "fast-xml-parser": "^5.3.4",
+    "graphology": "^0.26.0",
+    "graphology-components": "^1.5.4",
+    "graphology-layout-forceatlas2": "^0.10.1",
+    "graphology-metrics": "^2.4.0",
+    "graphology-shortest-path": "^2.1.0",
+    "graphology-types": "^0.24.8",
+    "ngraph.graph": "^20.1.2",
+    "ngraph.path": "^1.6.1",
+    "publint": "^0.3.15",
+    "tsdown": "^0.18.1",
+    "tsx": "^4.22.4",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16",
+    "webcola": "^3.4.0",
+    "xstate": "^5.28.0",
+    "zod": "^4.3.6"
+  },
+  "peerDependencies": {
+    "@dagrejs/dagre": "^3.0.0 || ^4.0.0",
+    "@hpcc-js/wasm-graphviz": "^1.0.0",
+    "cytoscape": "^3.0.0",
+    "d3-force": "^3.0.0",
+    "d3-hierarchy": "^3.0.0",
+    "dotparser": "^1.0.0",
+    "elkjs": "^0.9.0 || ^0.10.0 || ^0.11.0",
+    "fast-xml-parser": "^5.0.0",
+    "graphology": "^0.26.0",
+    "graphology-layout-forceatlas2": "^0.10.0",
+    "webcola": "^3.4.0",
+    "zod": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@dagrejs/dagre": {
+      "optional": true
+    },
+    "@hpcc-js/wasm-graphviz": {
+      "optional": true
+    },
+    "cytoscape": {
+      "optional": true
+    },
+    "d3-force": {
+      "optional": true
+    },
+    "d3-hierarchy": {
+      "optional": true
+    },
+    "dotparser": {
+      "optional": true
+    },
+    "elkjs": {
+      "optional": true
+    },
+    "fast-xml-parser": {
+      "optional": true
+    },
+    "graphology": {
+      "optional": true
+    },
+    "graphology-layout-forceatlas2": {
+      "optional": true
+    },
+    "webcola": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "bench": "vitest bench --run",
+    "dev": "tsdown --watch",
+    "fix:generated": "pnpm generate-schema",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "typecheck:repo": "tsc --project tsconfig.repo.json",
+    "check:generated": "tsx scripts/generate-json-schema.ts --check",
+    "check:conventions": "tsx scripts/check-conventions.ts",
+    "verify": "pnpm typecheck && pnpm typecheck:repo && pnpm check:generated && pnpm check:conventions && pnpm test -- --run && pnpm build && pnpm validate:package",
+    "validate:package": "publint && tsx scripts/smoke-package.ts",
+    "generate-schema": "tsx scripts/generate-json-schema.ts",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm run build && changeset publish",
+    "bench:compare": "tsx bench/compare/run.ts",
+    "bench:compare:quick": "tsx bench/compare/run.ts --quick",
+    "bench:report": "tsx bench/compare/report.ts"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "name": "fallow",
+  "version": "3.32.0",
+  "mcpName": "io.github.fallow-rs/fallow",
+  "description": "Codebase intelligence for TypeScript and JavaScript: health, complexity, duplication, architecture, styling drift, and unused code from one graph. CLI, LSP, and MCP server. Zero config for over 100 frameworks.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fallow-rs/fallow.git"
+  },
+  "homepage": "https://fallow.tools/docs/",
+  "funding": "https://github.com/sponsors/fallow-rs",
+  "bugs": {
+    "url": "https://github.com/fallow-rs/fallow/issues"
+  },
+  "intent": {
+    "version": 1,
+    "repo": "fallow-rs/fallow",
+    "docs": "https://fallow.tools/docs/"
+  },
+  "keywords": [
+    "code-intelligence",
+    "code-quality",
+    "pr-risk",
+    "static-analysis",
+    "code-duplication",
+    "circular-dependencies",
+    "unused-code",
+    "complexity",
+    "architecture",
+    "typescript",
+    "javascript",
+    "analyzer",
+    "lint",
+    "lsp",
+    "mcp",
+    "agent-skills",
+    "tanstack-intent"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "fallow": "bin/fallow",
+    "fallow-lsp": "bin/fallow-lsp",
+    "fallow-mcp": "bin/fallow-mcp"
+  },
+  "exports": {
+    "./types": {
+      "types": "./types/output-contract.d.ts"
+    },
+    "./package.json": "./package.json",
+    "./bin/*": "./bin/*",
+    "./scripts/*": "./scripts/*",
+    "./skills/*": "./skills/*",
+    "./schema.json": "./schema.json",
+    "./capabilities.json": "./capabilities.json",
+    "./issue-registry.json": "./issue-registry.json"
+  },
+  "typesVersions": {
+    "*": {
+      "types": [
+        "./types/output-contract.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "bin",
+    "scripts",
+    "skills",
+    "!skills/_artifacts",
+    "types",
+    "README.md",
+    "schema.json",
+    "capabilities.json",
+    "issue-registry.json"
+  ],
+  "scripts": {
+    "test:platform": "node --test scripts/platform-package.test.js",
+    "test:verify": "node --test scripts/verify-binary.test.js",
+    "test:sentinel-path": "node --test scripts/sentinel-path.test.js",
+    "test:lazy-verify": "node --test scripts/lazy-verify.test.js",
+    "test": "node --test scripts/*.test.js"
+  },
+  "dependencies": {
+    "detect-libc": "2.1.2"
+  },
+  "devDependencies": {
+    "@tanstack/intent": "0.4.0"
+  },
+  "optionalDependencies": {
+    "@fallow-cli/darwin-arm64": "3.32.0",
+    "@fallow-cli/darwin-x64": "3.32.0",
+    "@fallow-cli/linux-x64-gnu": "3.32.0",
+    "@fallow-cli/linux-arm64-gnu": "3.32.0",
+    "@fallow-cli/linux-x64-musl": "3.32.0",
+    "@fallow-cli/linux-arm64-musl": "3.32.0",
+    "@fallow-cli/win32-arm64-msvc": "3.32.0",
+    "@fallow-cli/win32-x64-msvc": "3.32.0",
+    "fallow-type-aware": "3.32.0"
+  }
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"selector-generator.d.ts","sourceRoot":"","sources":["../src/selector-generator.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,yBAAyB,CAAC;AAC5D,OAAO,KAAK,EAAmC,yBAAyB,EAAE,cAAc,EAAE,MAAM,YAAY,CAAC;AAK7G;;;GAGG;AACH,wBAAsB,iBAAiB,CACrC,QAAQ,EAAE,YAAY,EAAE,EACxB,iBAAiB,EAAE,MAAM,EACzB,OAAO,GAAE,yBAA8B,GACtC,OAAO,CAAC,cAAc,CAAC,CA0DzB"}

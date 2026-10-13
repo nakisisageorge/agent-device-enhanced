@@ -1,0 +1,70 @@
+{
+  "name": "@agent-device/security-patterns",
+  "version": "0.1.0",
+  "description": "Mobile app security automation patterns for agent-device. Credential leakage detection, PII scanning, certificate pinning verification, insecure storage detection.",
+  "license": "MIT",
+  "author": "George Nakisisa <nakisisageorge@gmail.com>",
+  "homepage": "https://github.com/nakisisageorge/agent-device-enhanced",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nakisisageorge/agent-device-enhanced.git"
+  },
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    },
+    "./credentials": {
+      "types": "./dist/src/credentials.d.ts",
+      "import": "./dist/src/credentials.js"
+    },
+    "./pii": {
+      "types": "./dist/src/pii.d.ts",
+      "import": "./dist/src/pii.js"
+    },
+    "./storage": {
+      "types": "./dist/src/storage.d.ts",
+      "import": "./dist/src/storage.js"
+    },
+    "./network": {
+      "types": "./dist/src/network.d.ts",
+      "import": "./dist/src/network.js"
+    }
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "oxlint . --deny-warnings"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "agent-device",
+    "security",
+    "mobile",
+    "credential-detection",
+    "pii",
+    "certificate-pinning",
+    "insecure-storage",
+    "automation"
+  ],
+  "devDependencies": {
+    "@agent-device/contracts": "workspace:*",
+    "@types/node": "^22.20.1",
+    "fast-check": "^4.9.0",
+    "oxlint": "^1.79.0",
+    "tsdown": "^0.22.14",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11",
+    "@vitest/coverage-v8": "4.1.11"
+  }
+}
